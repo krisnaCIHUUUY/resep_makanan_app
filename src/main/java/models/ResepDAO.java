@@ -20,7 +20,7 @@ public class ResepDAO {
     public List<Resep> getAllResep() {
         List<Resep> listResep = new ArrayList<>();
         // Query SQL untuk mengambil semua resep
-        String sql = "SELECT * FROM RESEP";
+        String sql = "SELECT * FROM resep";
 
         try (
             // Mendapatkan koneksi dari kelas utilitas
@@ -62,7 +62,7 @@ public class ResepDAO {
      * @return true jika berhasil, false jika gagal.
      */
     public boolean addResep(Resep resep) {
-        String sql = "INSERT INTO RESEP (id_resep, judul, deskripsi, porsi, waktu_memasak, tingkat_kesulitan, foto_utama_url, kategori_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO resep (id_resep, judul, deskripsi, porsi, waktu_memasak, tingkat_kesulitan, foto_utama_url, kategori_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
         boolean success = false;
 
         try (Connection conn = DBConnection.getConnection();
