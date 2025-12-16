@@ -2,33 +2,35 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package model;
+package models;
 
 /**
  * 
  * * @author LENOVO
  */
 public class Kategori {
-    private Long id;
+    private String idKategori; 
     private String namaKategori;
+    private String slug; // Ditambahkan sesuai skema database
 
     public Kategori() {
     }
 
-    
-    public Kategori(Long id, String namaKategori) {
-        this.id = id;
+    // Constructor lengkap
+    public Kategori(String idKategori, String namaKategori, String slug) {
+        this.idKategori = idKategori;
         this.namaKategori = namaKategori;
+        this.slug = slug;
     }
 
     // --- Getter dan Setter ---
 
-    public Long getId() {
-        return id;
+    public String getIdKategori() {
+        return idKategori;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setIdKategori(String idKategori) {
+        this.idKategori = idKategori;
     }
 
     public String getNamaKategori() {
@@ -39,11 +41,18 @@ public class Kategori {
         this.namaKategori = namaKategori;
     }
     
-    
+    public String getSlug() {
+        return slug;
+    }
+
+    public void setSlug(String slug) {
+        this.slug = slug;
+    }
+
     @Override
     public String toString() {
         return "Kategori{" +
-                "id=" + id +
+                "idKategori='" + idKategori + '\'' +
                 ", namaKategori='" + namaKategori + '\'' +
                 '}';
     }

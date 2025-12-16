@@ -35,7 +35,7 @@ public class ResepController {
         return resepDAO.addResep(resep);
     }
     
-    // Metode untuk Update dan Delete akan ditambahkan nanti (sesuai kebutuhan View)
+    // Metode Update dan Delete
     
     // public Resep ambilResepById(String id) { ... }
     // public boolean updateResep(Resep resep) { ... }

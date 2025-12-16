@@ -9,42 +9,69 @@ package models;
  * @author LENOVO
  */
 public class LangkahMemasak {
+    private String idLangkah;
+    private String idResep;
     private int nomorUrutan;
-    private String intruksi;
+    private String intsruksi;
     private String fotoLangkahUrl;
     
-    public LangkahMemasak(int nomorUrutan, String intruksi) {
+    public LangkahMemasak(){}
+    
+    public LangkahMemasak(String idLangkah, String idResep, int nomorUrutan, String intsruksi, String fotoLangkahUrl) {
+        this.idLangkah = idLangkah;
+        this.idResep = idResep;
         this.nomorUrutan = nomorUrutan;
-        this.intruksi    = intruksi;
+        this.intsruksi = intsruksi;
         this.fotoLangkahUrl = fotoLangkahUrl;
     }
         
-    public LangkahMemasak(int nomorUrutan, String intruksi, String fotoLangkahUrl) {
+    public LangkahMemasak( String idResep, int nomorUrutan, String intsruksi, String fotoLangkahUrl) {
+        this.idResep = idResep;
         this.nomorUrutan = nomorUrutan;
-        this.intruksi = intruksi;
+        this.intsruksi = intsruksi;
         this.fotoLangkahUrl = fotoLangkahUrl;
     }
     
     // Getter // 
+    public String getIdLangkah(){
+        return idLangkah;
+    }
+    public void setIdLangkah(String idLangkah){
+        this.idLangkah = idLangkah;
+    }
+    
+    public String getIdResep(){
+        return idResep;
+    }
+    public void setIdResep(String idResep){
+        this.idResep = idResep;
+    }
+    
     public int getNomorUrutan() {
         return nomorUrutan;
     }
+    public void setNomorUrutan(int nomorUrutan) {
+        this.nomorUrutan = nomorUrutan;
+    }
     
     public String getIntruksi() {
-        return intruksi;
+        return intsruksi;
+    }
+    public void setIntruksi(String intsruksi) {
+        this.intsruksi = intsruksi;
     }
     
     public String getFotoLangkahUrl() {
         return fotoLangkahUrl;
     }
-
-    Object[] getInstruksi() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    public void setFotoLangkahUrl(String fotoLangkahUrl) {
+        this.fotoLangkahUrl = fotoLangkahUrl;
     }
-    
-    
-        
-        
+
+    @Override
+    public String toString() {
+        return "Langkah " + nomorUrutan + ": " + intsruksi;
+    }
     }
     
     
