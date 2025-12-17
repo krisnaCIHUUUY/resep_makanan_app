@@ -12,55 +12,87 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Data Access Object untuk entitas Resep.
- * Bertanggung jawab untuk operasi CRUD (Create, Read, Update, Delete) di database.
- */
 public class ResepDAO {
     public List<Resep> getAllResep() {
         List<Resep> listResep = new ArrayList<>();
-        // Query SQL untuk mengambil semua resep
-        String sql = "SELECT * FROM resep";
+        String sql = "SELECT resep.*, kategori.nama_kategori FROM resep " +
+                     "JOIN kategori ON resep.kategori_id = kategori.id_kategori";
 
-        try (
-            // Mendapatkan koneksi dari kelas utilitas
-            Connection conn = DBConnection.getConnection();
-            // Membuat PreparedStatement untuk menjalankan query
-            PreparedStatement stmt = conn.prepareStatement(sql);
-            // Menjalankan query dan mendapatkan hasilnya
-            ResultSet rs = stmt.executeQuery()
-        ) {
-            // Iterasi melalui setiap baris hasil
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+            
             while (rs.next()) {
-                Resep resep = new Resep();
-                // Mengisi objek Resep dari data ResultSet
-                resep.setIdResep(rs.getString("id_resep"));
-                resep.setJudul(rs.getString("judul"));
-                resep.setDeskripsi(rs.getString("deskripsi"));
-                resep.setPorsi(rs.getInt("porsi"));
-                resep.setWaktuMemasak(rs.getInt("waktu_masak"));
-                resep.setTingkatKesulitan(rs.getString("tingkat_kesulitan"));
-                resep.setFotoUtama(rs.getString("foto_utama_url"));
-                resep.setKategoriId(rs.getString("kategori_id"));
-
+                Resep resep = mapResultSetToResep(rs);
                 listResep.add(resep);
             }
         } catch (SQLException e) {
             System.err.println("Gagal mengambil semua resep: " + e.getMessage());
-        } finally {
-             // Secara teknis koneksi ditutup secara otomatis karena menggunakan try-with-resources
-             // Namun, jika menggunakan getConnection(), pastikan untuk menutupnya atau mengandalkan try-with-resources.
-             // Di contoh ini, DBConnection.getConnection() mengembalikan objek Connection yang akan ditutup
-             // otomatis oleh try-with-resources setelah blok try selesai.
         }
         return listResep;
     }
+    
+    // Tambahkan method ini di dalam class ResepDAO
+public List<String> getLangkahByResepId(String idResep) {
+    List<String> listLangkah = new ArrayList<>();
+    // Ambil instruksi saja, diurutkan berdasarkan urutan memasak
+    String sql = "SELECT instruksi FROM langkah_memasak WHERE resep_id = ? ORDER BY nomor_urutan ASC";
 
-    /**
-     * Menyimpan objek Resep baru ke database. (Create)
-     * @param resep Objek Resep yang akan disimpan.
-     * @return true jika berhasil, false jika gagal.
-     */
+    try (Connection conn = DBConnection.getConnection();
+         PreparedStatement stmt = conn.prepareStatement(sql)) {
+        
+        stmt.setString(1, idResep);
+        try (ResultSet rs = stmt.executeQuery()) {
+            while (rs.next()) {
+                listLangkah.add(rs.getString("instruksi"));
+            }
+        }
+    } catch (SQLException e) {
+        System.err.println("Gagal mengambil langkah memasak: " + e.getMessage());
+    }
+    return listLangkah;
+}
+    
+    public List<BahanBaku> getBahanByResepId(String idResep) {
+        List<BahanBaku> listBahan = new ArrayList<>();
+        String sql = "SELECT * FROM bahan_baku WHERE resep_id = ?";
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            
+            stmt.setString(1, idResep);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    BahanBaku bahan = new BahanBaku();
+                    bahan.setNamaBahan(rs.getString("nama_bahan"));
+                    bahan.setJumlah(rs.getInt("jumlah"));
+                    bahan.setSatuan(rs.getString("satuan"));
+                    listBahan.add(bahan);
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Gagal mengambil bahan baku: " + e.getMessage());
+        }
+        return listBahan;
+    }
+    
+    private Resep mapResultSetToResep(ResultSet rs) throws SQLException {
+        Resep resep = new Resep();
+        resep.setIdResep(rs.getString("id_resep"));
+        resep.setJudul(rs.getString("judul"));
+        resep.setDeskripsi(rs.getString("deskripsi"));
+        resep.setPorsi(rs.getInt("porsi"));
+        resep.setWaktuMemasak(rs.getInt("waktu_masak"));
+        resep.setTingkatKesulitan(rs.getString("tingkat_kesulitan"));
+        resep.setFotoUtama(rs.getString("foto_utama_url"));
+        resep.setNamaKategori(rs.getString("nama_kategori"));
+        
+        // Asumsi: langkah_memasak ada di kolom teks panjang di tabel resep
+        // Jika tabel terpisah, Anda perlu buat method getLangkahByResepId
+//        resep.setLangkahMemasak(rs.getString("langkah_memasak"));
+        return resep;
+    }
+
     public boolean addResep(Resep resep) {
         String sql = "INSERT INTO resep (id_resep, judul, deskripsi, porsi, waktu_memasak, tingkat_kesulitan, foto_utama_url, kategori_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
         boolean success = false;
@@ -89,5 +121,6 @@ public class ResepDAO {
         return success;
     }
 
-    // Metode Update dan Delete akan ditambahkan nanti sesuai kebutuhan.
+
+    // Metode Update dan Delete 
 }

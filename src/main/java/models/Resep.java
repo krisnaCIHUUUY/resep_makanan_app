@@ -4,6 +4,9 @@
  */
 package models;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  *
  * @author ACER
@@ -12,17 +15,21 @@ public class Resep {
     private  String idResep;
     private  String judul;
     private  String deskripsi;
-    private  int porsi; // int
-    private  int waktuMemasak;   // int
+    private  int porsi; 
+    private  int waktuMemasak;   
     private  String tingkatKesulitan;
-    private  String kategoriId; // Foreign Key ke tabel KATEGORI
+    private  String kategoriId; 
+    private String namaKategori;
     private  String fotoUtama;
+    private List<BahanBaku> daftarBahan; // Untuk JList Bahan
+    private String langkahMemasak;
     
     public Resep(){
-    
+        this.daftarBahan = new ArrayList<>();
     }
     
-    public Resep(String idResep, String judul, String deskripsi, int porsi, int waktuMemasak, String tingkatKesulitan, String kategoriId, String fotoUtama) {
+    public Resep(String idResep, String judul, String deskripsi, int porsi, int waktuMemasak, 
+                 String tingkatKesulitan, String kategoriId, String namaKategori, String fotoUtama) {
         this.idResep = idResep;
         this.judul = judul;
         this.deskripsi = deskripsi;
@@ -30,7 +37,9 @@ public class Resep {
         this.waktuMemasak = waktuMemasak;
         this.tingkatKesulitan = tingkatKesulitan;
         this.kategoriId = kategoriId;
+        this.namaKategori = namaKategori;
         this.fotoUtama = fotoUtama;
+        this.daftarBahan = new ArrayList<>();
     }
     
     public String getIdResep() {
@@ -97,7 +106,25 @@ public class Resep {
         this.fotoUtama = fotoUtama;
     }
     
+    public List<BahanBaku> getDaftarBahan() {
+        return daftarBahan;
+    }
+
+    public void setDaftarBahan(List<BahanBaku> daftarBahan) {
+        this.daftarBahan = daftarBahan;
+    }
+
+    public String getLangkahMemasak() {
+        return langkahMemasak;
+    }
+
+    public void setLangkahMemasak(String langkahMemasak) {
+        this.langkahMemasak = langkahMemasak;
+    }
     
+    public String getNamaKategori() { return namaKategori; }
+    
+    public void setNamaKategori(String namaKategori) { this.namaKategori = namaKategori; }
     
     
 }

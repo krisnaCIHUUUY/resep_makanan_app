@@ -12,9 +12,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Data Access Object untuk entitas BahanBaku.
- */
 public class BahanBakuDAO {
     public boolean addBahanBaku(BahanBaku bahan) {
         String sql = "INSERT INTO Bahan_baku (id_bahan, resep_id, nama_bahan, jumlah, satuan) VALUES (?, ?, ?, ?, ?)";
@@ -26,7 +23,7 @@ public class BahanBakuDAO {
             stmt.setString(1, bahan.getIdBahan());
             stmt.setString(2, bahan.getResepId());
             stmt.setString(3, bahan.getNamaBahan());
-            stmt.setInt(4, bahan.getJumlah());
+            stmt.setInt(4, (int) bahan.getJumlah());
             stmt.setString(5, bahan.getSatuan());
 
             int rowsAffected = stmt.executeUpdate();
@@ -54,7 +51,7 @@ public class BahanBakuDAO {
                     bahan.setIdBahan(rs.getString("id_bahan"));
                     bahan.setResepId(rs.getString("resep_id"));
                     bahan.setNamaBahan(rs.getString("nama_bahan"));
-                    bahan.setJumlah(rs.getInt("jumlah"));
+                    bahan.setJumlah(rs.getDouble("jumlah"));
                     bahan.setSatuan(rs.getString("satuan"));
 
                     listBahan.add(bahan);

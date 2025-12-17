@@ -11,19 +11,16 @@ package models;
 public class Kategori {
     private String idKategori; 
     private String namaKategori;
-    private String slug; // Ditambahkan sesuai skema database
+    private String slug; 
 
     public Kategori() {
     }
 
-    // Constructor lengkap
     public Kategori(String idKategori, String namaKategori, String slug) {
         this.idKategori = idKategori;
         this.namaKategori = namaKategori;
         this.slug = slug;
     }
-
-    // --- Getter dan Setter ---
 
     public String getIdKategori() {
         return idKategori;

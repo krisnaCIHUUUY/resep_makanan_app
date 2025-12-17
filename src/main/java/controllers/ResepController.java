@@ -5,6 +5,7 @@
 package controllers;
 
 import java.util.List;
+import models.BahanBaku;
 import models.Resep;
 import models.ResepDAO;
 
@@ -19,21 +20,30 @@ public class ResepController {
         this.resepDAO = new ResepDAO();
     }
     
-    public List<Resep> getAllResep(){
-        System.out.println("controller:: mengambil resep");
+    public List<Resep> getAllResep() {
         return resepDAO.getAllResep();
     }
-    
-    public boolean simpanResepBaru(Resep resep) {
-        // Di sini bisa ditambahkan logika validasi data sebelum disimpan ke DAO
-        if (resep.getJudul() == null || resep.getJudul().trim().isEmpty()) {
-            System.err.println("Controller: Judul resep tidak boleh kosong.");
-            return false;
-        }
 
-        System.out.println("Controller: Menyimpan resep baru: " + resep.getJudul());
-        return resepDAO.addResep(resep);
+    // Method krusial untuk melengkapi data resep sebelum ditampilkan di Detail
+    public Resep getDetailResep(Resep resep) {
+    if (resep != null) {
+        // 1. Ambil Bahan Baku
+        List<BahanBaku> bahan = resepDAO.getBahanByResepId(resep.getIdResep());
+        resep.setDaftarBahan(bahan);
+        
+        // 2. Ambil Langkah Memasak (Sekarang dalam bentuk List)
+        List<String> langkah = resepDAO.getLangkahByResepId(resep.getIdResep());
+        
+        // Kita gabungkan List langkah menjadi satu String dengan baris baru (\n) 
+        // agar sesuai dengan property String langkahMemasak di class Resep
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < langkah.size(); i++) {
+            sb.append((i + 1) + ". " + langkah.get(i) + "\n");
+        }
+        resep.setLangkahMemasak(sb.toString());
     }
+    return resep;
+}
     
     // Metode Update dan Delete
     
