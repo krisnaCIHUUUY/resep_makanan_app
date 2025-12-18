@@ -45,6 +45,22 @@ public class ResepController {
     return resep;
 }
     
+    public boolean tambahResepBaru(Resep resep) {
+    // Validasi Dasar
+    if (resep.getJudul().isEmpty() || resep.getDaftarBahan().isEmpty()) {
+        System.err.println("Controller: Judul dan Bahan tidak boleh kosong!");
+        return false;
+    }
+    
+    // Generate ID unik jika belum ada (Bisa pakai UUID atau Timestamp)
+    if (resep.getIdResep() == null || resep.getIdResep().isEmpty()) {
+        String uniqueID = String.valueOf(System.currentTimeMillis() / 1000);
+        resep.setIdResep(uniqueID);
+    }
+
+    return resepDAO.simpanResepLengkap(resep);
+}
+    
     // Metode Update dan Delete
     
     // public Resep ambilResepById(String id) { ... }

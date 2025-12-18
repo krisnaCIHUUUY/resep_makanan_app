@@ -87,39 +87,69 @@ public List<String> getLangkahByResepId(String idResep) {
         resep.setFotoUtama(rs.getString("foto_utama_url"));
         resep.setNamaKategori(rs.getString("nama_kategori"));
         
-        // Asumsi: langkah_memasak ada di kolom teks panjang di tabel resep
-        // Jika tabel terpisah, Anda perlu buat method getLangkahByResepId
-//        resep.setLangkahMemasak(rs.getString("langkah_memasak"));
         return resep;
     }
 
-    public boolean addResep(Resep resep) {
-        String sql = "INSERT INTO resep (id_resep, judul, deskripsi, porsi, waktu_memasak, tingkat_kesulitan, foto_utama_url, kategori_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-        boolean success = false;
+    public boolean simpanResepLengkap(Resep resep) {
+    Connection conn = null;
+    try {
+        conn = DBConnection.getConnection();
+        conn.setAutoCommit(false); 
 
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-
-            stmt.setString(1, resep.getIdResep());
-            stmt.setString(2, resep.getJudul());
-            stmt.setString(3, resep.getDeskripsi());
-            stmt.setInt(4, resep.getPorsi());
-            stmt.setInt(5, resep.getWaktuMemasak());
-            stmt.setString(6, resep.getTingkatKesulitan());
-            stmt.setString(7, resep.getKategoriId());
-            stmt.setString(8, resep.getFotoUtama());
-
-            int rowsAffected = stmt.executeUpdate();
-            if (rowsAffected > 0) {
-                success = true;
-                System.out.println("Resep berhasil ditambahkan: " + resep.getJudul());
-            }
-
-        } catch (SQLException e) {
-            System.err.println("Gagal menambahkan resep: " + e.getMessage());
+        // 1. Simpan ke tabel 'resep'
+        String sqlResep = "INSERT INTO resep (id_resep , judul, deskripsi, porsi, waktu_masak, tingkat_kesulitan, foto_utama_url, kategori_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        try (PreparedStatement stmtResep = conn.prepareStatement(sqlResep)) {
+            stmtResep.setString(1, resep.getIdResep());
+            stmtResep.setString(2, resep.getJudul());
+            stmtResep.setString(3, resep.getDeskripsi());
+            stmtResep.setInt(4, resep.getPorsi());
+            stmtResep.setInt(5, resep.getWaktuMemasak());
+            stmtResep.setString(6, resep.getTingkatKesulitan());
+            stmtResep.setString(7, resep.getFotoUtama());
+            stmtResep.setString(8, resep.getKategoriId());
+            stmtResep.executeUpdate();
         }
-        return success;
+
+        // 2. Simpan ke tabel 'bahan_baku'
+        String sqlBahan = "INSERT INTO bahan_baku (resep_id, nama_bahan, jumlah, satuan) VALUES (?, ?, ?, ?)";
+        try (PreparedStatement stmtBahan = conn.prepareStatement(sqlBahan)) {
+            for (BahanBaku bahan : resep.getDaftarBahan()) {
+                stmtBahan.setString(1, resep.getIdResep());
+                stmtBahan.setString(2, bahan.getNamaBahan());
+                stmtBahan.setDouble(3, bahan.getJumlah());
+                stmtBahan.setString(4, bahan.getSatuan());
+                stmtBahan.addBatch(); 
+            }
+            stmtBahan.executeBatch();
+        }
+
+        // 3. Simpan ke tabel 'langkah_memasak'
+        String sqlLangkah = "INSERT INTO langkah_memasak (resep_id, nomor_urutan, instruksi) VALUES (?, ?, ?)";
+        try (PreparedStatement stmtLangkah = conn.prepareStatement(sqlLangkah)) {
+            // Kita asumsikan langkah dipisah per baris di JTextArea
+            String[] steps = resep.getLangkahMemasak().split("\n");
+            for (int i = 0; i < steps.length; i++) {
+                if (!steps[i].trim().isEmpty()) {
+                    stmtLangkah.setString(1, resep.getIdResep());
+                    stmtLangkah.setInt(2, i + 1);
+                    stmtLangkah.setString(3, steps[i].trim());
+                    stmtLangkah.addBatch();
+                }
+            }
+            stmtLangkah.executeBatch();
+        }
+
+        conn.commit(); // Jika semua sukses, simpan permanen
+        return true;
+
+    } catch (SQLException e) {
+        if (conn != null) {
+            try { conn.rollback(); } catch (SQLException ex) { ex.printStackTrace(); }
+        }
+        System.err.println("Gagal simpan resep lengkap: " + e.getMessage());
+        return false;
     }
+}
 
 
     // Metode Update dan Delete 
